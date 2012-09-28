@@ -16,12 +16,11 @@
 
 
 class PedirEdad < SIVRPlivo
-  set_url_ivr('http://192.168.1.2:3000')
+  set_url_ivr('http://localhost:3000')
 
   answer do
     pre_answer{
-      speak('hoooooooooooooooooooooooooooooo', :loop => 3)
-      speak('haaaaaaaaaaaaaaa', :loop => 2)
+      speak('hi pre answer', :loop => 3)
     }
     speak('hi how are you, give me a number')
     get_digits{|digits|
