@@ -15,24 +15,23 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-class PedirEdad < SIVR
-  set_url_ivr('http://localhost:3000')
+class PedirEdad < SIVRPlivo
+  set_url_ivr('http://192.168.1.2:3000')
 
   answer do
-    speak('hola como esta', :loop => 5)
-    play('pediredad')
+    pre_answer{
+      speak('hoooooooooooooooooooooooooooooo', :loop => 3)
+      speak('haaaaaaaaaaaaaaa', :loop => 2)
+    }
+    speak('hi how are you, give me a number')
     get_digits{|digits|
-      puts "Su edad es de %s" % digits
-      play('pedir su dia de nacimiento')
-      get_digits{|dia|
-        puts "Su dia de nacimiento fue el %s" % dia
-      }
+      speak('you give me the number')
+      speak(digits)
     }
   end
 
-  hangup do
-    print params
-    print "Cuelge"
+  answer_hangup do
+    print "Cuelge\n"
   end
   
 end
