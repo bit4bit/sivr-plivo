@@ -52,31 +52,32 @@ class SIVRPlivo < Grape::API
   #::&block:: bloque que se ejecuta cuando plivo inicia llamada
   def self.answer(prefix = '', &block)
     desc "Process digits sends by plivo"
-    get(prefix + '/digits/:id') do
+    post(prefix + '/digits/:id') do
       content_type 'text/xml'
       id = params[:id]
       ivrxml = ''
       if not @@fibers_ivr[id].nil?
-        ivrxml += SIVR._fibers_to_ivrxml(@@fibers_ivr[id], params['Digits'])
+        ivrxml += SIVRPlivo._fibers_to_ivrxml(@@fibers_ivr[id], params['Digits'])
         @@fibers_ivr.delete(id) #se elimina
       end
-      SIVR._response(ivrxml)
+      SIVRPlivo._response(ivrxml)
     end
     
     desc "Process answer send by plivo"
-    get(prefix + '/answer') do
+    post(prefix + '/answer') do
       content_type 'text/xml'
       ivrxml = ''
-      ivrxml = SIVR._fibers_to_ivrxml(Fiber.new(&block))
-      SIVR._response(ivrxml)
+      ivrxml = SIVRPlivo._fibers_to_ivrxml(Fiber.new(&block))
+      SIVRPlivo._response(ivrxml)
     end
   end
   
   
   #Se ejecuta bloque cuando se cuelga la llamada
-  def self.hangup(&block)
+  def self.answer_hangup(&block)
     desc "Hangup the plivo call"
     get('/hangup', &block)
+    post('/hangup', &block)
   end
   
   #Plivo::GetDigits
@@ -103,11 +104,65 @@ class SIVRPlivo < Grape::API
     return Fiber.yield '<Speak %s >%s</Speak>' % [args.map{|k,v| "#{k}=\"#{v}\""}.join(' '), txt]
   end
 
+  #Plivo::Record
+  def self.record(args={})
+    return Fiber.yield '<Record %s/>' % args.map{|k,v| "#{k}=\"#{v}\""}.join(' ')
+  end
+
+  #Plivo::Hangup
+  def self.hangup(args={})
+    return Fiber.yield '<Hangup %s/>' % args.map{|k,v| "#{k}=\"#{v}\""}.join(' ')
+  end
+
+  #PLivo::Redirect
+  def self.redirect(url, args={})
+    return Fiber.yield '<Redirect %s>%s</Redirect>' % [args.map{|k,v| "#{k}=\"#{v}\""}.join(' '), url]
+  end
+  
+  #Plivo::SIPTransfer
+  def self.sip_transfer(uri, args={})
+    return Fiber.yield '<SIPTransfer %s>%s</SIPTransfer>' % [args.map{|k,v| "#{k}=\"#{v}\""}.join(' '), uri]
+  end
+
+  #Plivo::Wait
+  def self.wait(args={})
+    return Fiber.yield '<Wait %s/>' % args.map{|k,v| "#{k}=\"#{v}\""}.join(' ')
+  end
+
+  #Plivo::GetSpeech
+  def self.get_speech(args={}, &block)
+    ivrxml = SIVRPlivo._fibers_to_ivrxml(Fiber.new(&block), args)
+    return Fiber.yield '<GetSpeech %s/>%s</GetSpeech>' % [args.map{|k,v| "#{k}=\"#{v}\""}.join(' '), ivrxml ]
+  end
+  
+  #Plivo::PreAnswer
+  def self.pre_answer(args={}, &block)
+    ivrxml = SIVRPlivo._fibers_to_ivrxml(Fiber.new(&block), args)
+    return Fiber.yield '<PreAnswer>%s</PreAnswer>' % ivrxml
+  end
+  
+  #Plivo::Dial
+  def self.dial(args={}, &block)
+    ivrxml = SIVRPlivo._fibers_to_ivrxml(Fiber.new(&block), args)
+    return Fiber.yield '<Dial %s/>%s</Dial>' % [args.map{|k,v| "#{k}=\"#{v}\""}.join(' '), ivrxml ]
+  end
+
+  #Plivo::Dial:Number
+  #**Attention** debe ser usado dentro de Plivo::Dial
+  def self.number(number, args={})
+    return Fiber.yield '<Number %s/>%s</Number>' % [args.map{|k,v| "#{k}=\"#{v}\""}.join(' '), number ]
+  end
+  
+  #Plivo::Conference
+  def self.conference(name, args={})
+    return Fiber.yield '<Conference %s/>%s</Conference>' % [args.map{|k,v| "#{k}=\"#{v}\""}.join(' '), name ]
+  end
+  
   
   private
   
   def self._response(msg)
-    return '%s<Response>%s<Response>' % [@@xml_doctype, msg]
+    return '%s<Response>%s</Response>' % [@@xml_doctype, msg]
   end
 
   #Ejecuta fibers para continuar la logica del ivr y ademas para obtener xml del ivr
