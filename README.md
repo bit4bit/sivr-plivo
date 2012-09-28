@@ -21,7 +21,7 @@ El aplicativo utiliza los Fibers de Ruby y la libreria Grape para realizar las e
 
 Ejemplos/Example
 ====
-<code>
+```ruby
 class SuperIVR < SIVRPlivo #SubClass Grape::API
   def answer do
     #Escriba la logica de su IVR
@@ -35,4 +35,4 @@ class SuperIVR < SIVRPlivo #SubClass Grape::API
     puts "Hasta despues"
   end
 end
-</code>
+```
