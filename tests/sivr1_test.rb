@@ -19,10 +19,11 @@ $:.unshift '../examples'
 require 'rack/test'
 require 'sivr_plivo'
 require 'sivr1'
+require 'minitest/autorun'
 
 require 'securerandom'
 
-class PedirEdadTest < Test::Unit::TestCase
+class PedirEdadTest < MiniTest::Test
   include Rack::Test::Methods
 
   def app
@@ -46,14 +47,14 @@ class PedirEdadTest < Test::Unit::TestCase
   #we need to know how much memory use with Fibers
   def test_thread_answer
     threads = []
-    (1..1000).each{
+    (1..10).each{
       threads << Thread.new{
         post "/answer"
         assert last_response.status == 201
         assert last_response.body.include?('action='), 'not found: action'
         assert last_response.body.include?('hi pre answer'), 'not found: hi pre answer'
         
-        action = last_response.body.scan(/action=\"([^\"]+)\"/).first.first.strip
+        action = last_response.body.scan(/action=\"([^\"]+)\"/).first.first
         id = action.scan(/[^\/]+$/).first
         send_digits = SecureRandom.random_number(3000)
         post "/digits/%s" % id, {:Digits => send_digits}
@@ -66,11 +67,15 @@ class PedirEdadTest < Test::Unit::TestCase
   end
 
   #Hay incovenientes con los Threads y los Fibers
+  #https://github.com/eventmachine/eventmachine/blob/dd675e4d061785cfe8240cd98e4c7525cd6fdae5/docs/old/LIGHTWEIGHT_CONCURRENCY
+  #Entonces el programa debe ser corrido con un servicio como thin o que usen eventmachine
+  #ya que este corre en un solo thread, o bien eso fue lo que no encontre en el codigo de
+  #eventmachine.
   def test_answer_fibers
     threads = []
     ids = []
-    mt = Mutex.new
-    (1..1000).each{
+    mutex = Mutex.new
+    (1..10).each{
       threads << Thread.new{
         post "/answer"
         assert last_response.body.include?('action='), 'not found: action'

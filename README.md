@@ -9,6 +9,7 @@ Write IVRs for Plivo like Ruby Programs.
 Requerimientos
 ====
 * Ruby 1.9
+* gem *minitest*
 
 Librerias
 ----
@@ -37,6 +38,10 @@ Se han mapeado todos los elementos de la siguiente forma:
              * PreAnswer => pre_answer(options={}, &block)
              
 
+Correr con:
+	* *Thin* 
+	
+	
 Ejemplos/Example
 ====
 ```ruby
