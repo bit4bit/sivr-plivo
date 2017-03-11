@@ -132,7 +132,7 @@ class SIVRPlivo < Grape::API
   #Plivo::GetSpeech
   def self.get_speech(args={}, &block)
     ivrxml = SIVRPlivo._fibers_to_ivrxml(Fiber.new(&block), args)
-    return Fiber.yield '<GetSpeech %s/>%s</GetSpeech>' % [args.map{|k,v| "#{k}=\"#{v}\""}.join(' '), ivrxml ]
+    return Fiber.yield '<GetSpeech %s>%s</GetSpeech>' % [args.map{|k,v| "#{k}=\"#{v}\""}.join(' '), ivrxml ]
   end
   
   #Plivo::PreAnswer
@@ -144,18 +144,18 @@ class SIVRPlivo < Grape::API
   #Plivo::Dial
   def self.dial(args={}, &block)
     ivrxml = SIVRPlivo._fibers_to_ivrxml(Fiber.new(&block), args)
-    return Fiber.yield '<Dial %s/>%s</Dial>' % [args.map{|k,v| "#{k}=\"#{v}\""}.join(' '), ivrxml ]
+    return Fiber.yield '<Dial %s>%s</Dial>' % [args.map{|k,v| "#{k}=\"#{v}\""}.join(' '), ivrxml ]
   end
 
   #Plivo::Dial:Number
   #**Attention** debe ser usado dentro de Plivo::Dial
   def self.number(number, args={})
-    return Fiber.yield '<Number %s/>%s</Number>' % [args.map{|k,v| "#{k}=\"#{v}\""}.join(' '), number ]
+    return Fiber.yield '<Number %s>%s</Number>' % [args.map{|k,v| "#{k}=\"#{v}\""}.join(' '), number ]
   end
   
   #Plivo::Conference
   def self.conference(name, args={})
-    return Fiber.yield '<Conference %s/>%s</Conference>' % [args.map{|k,v| "#{k}=\"#{v}\""}.join(' '), name ]
+    return Fiber.yield '<Conference %s>%s</Conference>' % [args.map{|k,v| "#{k}=\"#{v}\""}.join(' '), name ]
   end
   
   
