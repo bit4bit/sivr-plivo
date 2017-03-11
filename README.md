@@ -29,7 +29,7 @@ Se han mapeado todos los elementos de la siguiente forma:
              * GetSpeech => get_speech(options={}, &block)
              * Record => record(options={})
              * Dial => dial(options={}, &block)
-             *  Number => number(num, options={})
+             * Number => number(num, options={})
              * Conference => conference(options={})
              * Hangup => hangup(options={})
              * Redirect => redirect(url, options={})
@@ -46,7 +46,7 @@ Ejemplos/Example
 ====
 ```ruby
 class SuperIVR < SIVRPlivo #SubClass Grape::API
-  def answer do
+  answer do
     pre_answer {
       speak 'bienvenido y bienvenida'
     }
@@ -58,7 +58,7 @@ class SuperIVR < SIVRPlivo #SubClass Grape::API
     end
   end
 
-  def answer_hangup do
+  answer_hangup do
     puts "Hasta despues"
   end
 end
