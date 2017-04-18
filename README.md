@@ -44,8 +44,13 @@ Correr con:
 	
 Ejemplos/Example
 ====
+
 ```ruby
 class SuperIVR < SIVRPlivo #SubClass Grape::API
+  post '/step/1' do
+    hangup
+  end
+  
   def answer do
     pre_answer {
       speak 'bienvenido y bienvenida'
@@ -53,13 +58,26 @@ class SuperIVR < SIVRPlivo #SubClass Grape::API
 
     #Escriba la logica de su IVR
     play '/audio/presentacion.wav'
-    get_digits(:audio => '/audio/decir_un_numero.wav') do |digits|
-      puts "Usted indico el numero %d" % digits.to_i
-    end
+    get_digits(:action => 'http://localhost:3000/step1', :audio => '/audio/decir_un_numero.wav')
+
   end
 
   def answer_hangup do
     puts "Hasta despues"
   end
+end
+```
+
+or include in Grape App
+
+```ruby
+class Demo < Grape::API
+ include SIVR::Helpers
+ 
+ get '/answer' do
+   plivo do
+     pre_answer { speak 'saludos' }
+   end
+ end
 end
 ```

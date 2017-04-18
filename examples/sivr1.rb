@@ -13,20 +13,21 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+require 'rubygems'
+require 'sivr_plivo'
 
 class PedirEdad < SIVRPlivo
-  set_url_ivr('http://localhost:3000')
-
+  post '/step1' do
+	speak "your number #{params['Digits']}"
+	hangup
+  end
+ 
   answer do
     pre_answer{
       speak('hi pre answer', :loop => 3)
     }
     speak('hi how are you, give me a number')
-    get_digits{|digits|
-      speak('you give me the number')
-      speak(digits)
-    }
+    get_digits action: 'http://localhost:3000/step1'
   end
 
   answer_hangup do
